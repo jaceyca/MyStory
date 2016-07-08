@@ -21,10 +21,11 @@ class CreatePostViewController: UIViewController, UIImagePickerControllerDelegat
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if(posts == nil){
+        posts = NSKeyedUnarchiver.unarchiveObjectWithFile(Post.ArchiveURL.path!) as? [Post]
+        if posts == nil {
             posts = []
         }
-
+        
         // Do any additional setup after loading the view.
     }
 
@@ -52,7 +53,6 @@ class CreatePostViewController: UIViewController, UIImagePickerControllerDelegat
         let title = titleField.text
         let caption = descriptionField.text
         let date = datePicker.date
-        
         if photo != nil && title != nil && caption != nil {
             let newPost = Post.init(photo: photo, title: title, caption: caption, date: date)
             posts?.insert(newPost!, atIndex: 0)
