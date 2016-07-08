@@ -35,9 +35,24 @@ class CreatePostViewController: UIViewController, UIImagePickerControllerDelegat
     }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        let size = CGSize(width: 600, height: 600)
         let originalImage = info[UIImagePickerControllerOriginalImage] as! UIImage
-        photoView.image = originalImage
+        photoView.image = resize(originalImage, newSize: size)
         dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func resize(image: UIImage, newSize: CGSize) -> UIImage {
+        let resizeImageView = UIImageView(frame: CGRectMake(0, 0, newSize.width, newSize.height))
+        resizeImageView.contentMode = UIViewContentMode.ScaleAspectFill
+        resizeImageView.image = image
+        
+        UIGraphicsBeginImageContext(resizeImageView.frame.size)
+        resizeImageView.layer.renderInContext(UIGraphicsGetCurrentContext()!)
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
     }
     
     @IBAction func photoLibrary(sender: AnyObject) {
@@ -53,14 +68,16 @@ class CreatePostViewController: UIViewController, UIImagePickerControllerDelegat
         let title = titleField.text
         let caption = descriptionField.text
         let date = datePicker.date
+        
         if photo != nil && title != nil && caption != nil {
             let newPost = Post.init(photo: photo, title: title, caption: caption, date: date)
-            posts?.insert(newPost!, atIndex: 0)
+            self.posts?.insert(newPost!, atIndex: 0)
             
-            savePosts()
+            self.savePosts()
         }
         
         self.dismissViewControllerAnimated(true, completion: nil)
+        
 //        NSNotificationCenter.defaultCenter().postNotificationName("madePost", object: nil)
         
     }

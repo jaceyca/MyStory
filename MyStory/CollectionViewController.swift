@@ -59,7 +59,9 @@ class CollectionViewController: UIViewController, UICollectionViewDataSource, UI
     }
     
     func loadPosts() {
-        posts = NSKeyedUnarchiver.unarchiveObjectWithFile(Post.ArchiveURL.path!) as? [Post]
+        //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
+            self.posts = NSKeyedUnarchiver.unarchiveObjectWithFile(Post.ArchiveURL.path!) as! [Post]
+        //}
     }
     
     func refreshControlAction(refreshControl: UIRefreshControl) {
