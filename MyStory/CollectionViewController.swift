@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Photos
 class CollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
 
 
@@ -50,17 +50,29 @@ class CollectionViewController: UIViewController, UICollectionViewDataSource, UI
         return 0
     }
     
+    func getAssetThumbnail(asset: PHAsset) -> UIImage {
+        let manager = PHImageManager.defaultManager()
+        let option = PHImageRequestOptions()
+        var thumbnail = UIImage()
+        option.synchronous = true
+        manager.requestImageForAsset(asset, targetSize: CGSize(width: 100.0, height: 100.0), contentMode: .AspectFit, options: option, resultHandler: {(result, info)->Void in
+            thumbnail = result!
+        })
+        return thumbnail
+    }
+
+    
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = searchCollectionView.dequeueReusableCellWithReuseIdentifier("CollectionCell", forIndexPath: indexPath) as! CollectionCell
         let post = posts[indexPath.row]
-        cell.cellImage.image = post.photo
         
+        cell.cellImage.image = self.getAssetThumbnail(post.photos![0])
         return cell
     }
     
     func loadPosts() {
         //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
-            self.posts = NSKeyedUnarchiver.unarchiveObjectWithFile(Post.ArchiveURL.path!) as! [Post]
+            self.posts = NSKeyedUnarchiver.unarchiveObjectWithFile(Post.ArchiveURL.path!) as? [Post]
         //}
     }
     

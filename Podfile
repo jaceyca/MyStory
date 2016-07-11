@@ -6,5 +6,6 @@ target 'MyStory' do
   use_frameworks!
 
   # Pods for MyStory
+  pod "BSImagePicker", "~> 2.3"
 
 end

@@ -7,17 +7,21 @@
 //
 
 import UIKit
+import BSImagePicker
+import Photos
 
 class CreatePostViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
 
     @IBOutlet weak var datePicker: UIDatePicker!
     @IBOutlet weak var titleFieldLabel: UILabel!
     @IBOutlet weak var titleField: UITextField!
-    @IBOutlet weak var descriptionField: UITextView!
+    @IBOutlet weak var captionField: UITextView!
     @IBOutlet weak var photoView: UIImageView!
     
+    var photos: [PHAsset] = []
     var posts: [Post]?
     var collectionVC: CollectionViewController?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,26 +60,66 @@ class CreatePostViewController: UIViewController, UIImagePickerControllerDelegat
     }
     
     @IBAction func photoLibrary(sender: AnyObject) {
-        let libraryvc = UIImagePickerController()
-        libraryvc.delegate = self
-        libraryvc.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
+//        let libraryvc = UIImagePickerController()
+//        libraryvc.delegate = self
+//        libraryvc.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
         
-        self.presentViewController(libraryvc, animated: true, completion: nil)
+        let vc = BSImagePickerViewController()
+        photos = []
+        
+        bs_presentImagePickerController(vc, animated: true, select: { (asset: PHAsset) -> Void in
+            // User selected an asset.
+            // Do something with it, start upload perhaps?
+
+            self.photos.append(asset)
+            
+            }, deselect: { (asset: PHAsset) -> Void in
+                // User deselected an assets.
+                // Do something, cancel upload?
+                let i = self.photos.indexOf(asset) ?? -1
+                self.photos.removeAtIndex(i)
+                
+            }, cancel: { (assets: [PHAsset]) -> Void in
+                // User cancelled. And this where the assets currently selected.
+                self.photos = []
+            }, finish: { (assets: [PHAsset]) -> Void in
+                // User finished with these assets
+                self.photoView.image = self.getAssetThumbnail(self.photos[0])
+
+            }, completion: nil)
+
+        //        self.presentViewController(vc, animated: true, completion: nil)
+    }
+
+    
+    func getAssetThumbnail(asset: PHAsset) -> UIImage {
+        let manager = PHImageManager.defaultManager()
+        let option = PHImageRequestOptions()
+        var thumbnail = UIImage()
+        option.synchronous = true
+        manager.requestImageForAsset(asset, targetSize: CGSize(width: 100.0, height: 100.0), contentMode: .AspectFit, options: option, resultHandler: {(result, info)->Void in
+            thumbnail = result!
+        })
+        return thumbnail
     }
     
+
+    
     @IBAction func createPost(sender: AnyObject) {
-        let photo = photoView.image
+
+        
         let title = titleField.text
-        let caption = descriptionField.text
+        let caption = captionField.text
         let date = datePicker.date
         
-        if photo != nil && title != nil && caption != nil {
-            let newPost = Post.init(photo: photo, title: title, caption: caption, date: date)
-            self.posts?.insert(newPost!, atIndex: 0)
-            
-            self.savePosts()
+        if photos.count != 0 {
+            print (photos.count)
+            if title != nil && caption != nil {
+                let newPost = Post.init(photos: photos, title: title, caption: caption, date: date)
+                self.posts?.insert(newPost!, atIndex: 0)
+                savePosts()
+            }
         }
-        
         self.dismissViewControllerAnimated(true, completion: nil)
         
 //        NSNotificationCenter.defaultCenter().postNotificationName("madePost", object: nil)

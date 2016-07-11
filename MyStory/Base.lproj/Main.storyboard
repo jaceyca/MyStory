@@ -104,8 +104,8 @@
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
+                        <outlet property="captionField" destination="MUg-uw-gZd" id="kBz-f3-94L"/>
                         <outlet property="datePicker" destination="KdU-uk-AmS" id="emR-Wk-sNP"/>
-                        <outlet property="descriptionField" destination="MUg-uw-gZd" id="v7o-69-9VU"/>
                         <outlet property="photoView" destination="yX5-Pu-5Na" id="0hO-TP-ciV"/>
                         <outlet property="titleField" destination="B1n-uz-nZV" id="sbv-RT-0NY"/>
                         <outlet property="titleFieldLabel" destination="EOQ-qK-uZE" id="T2Y-Vt-ldx"/>

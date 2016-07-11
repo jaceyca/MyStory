@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import Photos
 
 struct PropertyKey {
     static let dateKey = "date"
-    static let photoKey = "photo"
+    static let photosKey = "photos"
     static let titleKey = "title"
     static let captionKey = "caption"
 }
@@ -18,17 +19,18 @@ struct PropertyKey {
 class Post: NSObject, NSCoding {
     
     var date: NSDate?
-    var photo: UIImage?
     var title: String?
     var caption: String?
+    var photos:[PHAsset]?
     
     static let DocumentsDirectory = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
     static let ArchiveURL = DocumentsDirectory.URLByAppendingPathComponent("posts")
     
-    init?(photo: UIImage?, title: String?, caption: String?, date: NSDate?) {
+    init?(photos: [PHAsset]?, title: String?, caption: String?, date: NSDate?) {
         // Initialize stored properties.
         self.date = date
-        self.photo = photo
+        self.photos = photos
+        //print (photos)
         self.title = title
         self.caption = caption
         
@@ -45,7 +47,7 @@ class Post: NSObject, NSCoding {
         
         
         aCoder.encodeObject(date, forKey: PropertyKey.dateKey)
-        aCoder.encodeObject(photo, forKey: PropertyKey.photoKey)
+        aCoder.encodeObject(photos, forKey: PropertyKey.photosKey)
         aCoder.encodeObject(caption, forKey: PropertyKey.captionKey)
         aCoder.encodeObject(title, forKey: PropertyKey.titleKey)
     
@@ -54,11 +56,11 @@ class Post: NSObject, NSCoding {
     required convenience init?(coder aDecoder: NSCoder) {
         
         let date = aDecoder.decodeObjectForKey(PropertyKey.dateKey) as? NSDate
-        let photo = aDecoder.decodeObjectForKey(PropertyKey.photoKey) as? UIImage
+        let photos = aDecoder.decodeObjectForKey(PropertyKey.photosKey) as? [PHAsset]
         let title = aDecoder.decodeObjectForKey(PropertyKey.titleKey) as! String
         let caption = aDecoder.decodeObjectForKey(PropertyKey.captionKey) as! String
         
-        self.init(photo: photo, title: title, caption: caption, date: date)
+        self.init(photos: photos, title: title, caption: caption, date: date)
 
 
     }
